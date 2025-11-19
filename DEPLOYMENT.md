@@ -23,32 +23,41 @@ Certifique-se de que seu código está em um repositório Git (GitHub, GitLab, B
 3. Selecione **"From Git Repository"**
 4. Conecte seu repositório
 
-### 3. Configure as Variáveis de Ambiente
+### 3. Configure as Build Arguments (Build Args)
 
-No Easypanel, vá em **Environment Variables** e adicione:
+No Easypanel, vá em **Build Arguments** ou **Environment Variables** (dependendo da interface) e adicione:
 
-```env
+**⚠️ CRÍTICO:** Essas variáveis precisam estar disponíveis DURANTE o build!
+
+```
 VITE_API_URL=https://sua-api.dominio.com/api/v1
 VITE_APP_NAME=GestorHS Sistema
 VITE_APP_VERSION=1.0.0
 VITE_ENV=production
 ```
 
+**No Easypanel, você pode configurar isso de 2 formas:**
+
+#### Opção 1: Como Environment Variables (mais fácil)
+1. Vá em **Settings** > **Environment**
+2. Adicione as variáveis acima
+3. O Easypanel as passará automaticamente para o build
+
+#### Opção 2: Como Build Arguments
+1. Vá em **Advanced Settings** > **Build Args**
+2. Adicione as mesmas variáveis
+3. Elas serão usadas especificamente durante o build
+
 **⚠️ IMPORTANTE:** Substitua `https://sua-api.dominio.com/api/v1` pela URL real do seu backend!
 
-### 4. Configure o Build
+### 4. Configure o App
 
-No Easypanel, configure:
+No Easypanel, verifique:
 
-- **Build Command:** `npm install && npm run build`
-- **Start Command:** (deixe vazio, o Nginx cuidará disso)
 - **Port:** `80`
+- O Easypanel detectará automaticamente o `Dockerfile`
 
-### 5. Configure o Dockerfile
-
-O Easypanel detectará automaticamente o `Dockerfile` no repositório.
-
-### 6. Deploy
+### 5. Deploy
 
 Clique em **Deploy** e aguarde o build completar.
 
@@ -58,13 +67,20 @@ Clique em **Deploy** e aguarde o build completar.
 
 ### 1. Build da Imagem
 
+⚠️ **IMPORTANTE:** Use `--build-arg` para passar as variáveis durante o build!
+
 ```bash
 # Clone o repositório
 git clone seu-repositorio.git
 cd gestorhs-sistema
 
-# Build da imagem Docker
-docker build -t gestorhs-frontend:latest .
+# Build da imagem Docker com build arguments
+docker build \
+  --build-arg VITE_API_URL=https://sua-api.dominio.com/api/v1 \
+  --build-arg VITE_APP_NAME="GestorHS Sistema" \
+  --build-arg VITE_APP_VERSION=1.0.0 \
+  --build-arg VITE_ENV=production \
+  -t gestorhs-frontend:latest .
 ```
 
 ### 2. Execute o Container
@@ -73,12 +89,10 @@ docker build -t gestorhs-frontend:latest .
 docker run -d \
   --name gestorhs-frontend \
   -p 80:80 \
-  -e VITE_API_URL=https://sua-api.dominio.com/api/v1 \
-  -e VITE_APP_NAME="GestorHS Sistema" \
-  -e VITE_APP_VERSION=1.0.0 \
-  -e VITE_ENV=production \
   gestorhs-frontend:latest
 ```
+
+**Nota:** Não é necessário passar `-e` no `docker run` porque as variáveis já foram compiladas no build!
 
 ### 3. Verifique o Status
 
@@ -197,17 +211,20 @@ No Easypanel:
 # Pull das últimas alterações
 git pull
 
-# Rebuild da imagem
-docker build -t gestorhs-frontend:latest .
+# Rebuild da imagem (com build args)
+docker build \
+  --build-arg VITE_API_URL=https://sua-api.dominio.com/api/v1 \
+  --build-arg VITE_APP_NAME="GestorHS Sistema" \
+  --build-arg VITE_APP_VERSION=1.0.0 \
+  --build-arg VITE_ENV=production \
+  -t gestorhs-frontend:latest .
 
 # Pare e remova o container antigo
 docker stop gestorhs-frontend
 docker rm gestorhs-frontend
 
 # Execute o novo container
-docker run -d --name gestorhs-frontend -p 80:80 \
-  -e VITE_API_URL=https://sua-api.dominio.com/api/v1 \
-  gestorhs-frontend:latest
+docker run -d --name gestorhs-frontend -p 80:80 gestorhs-frontend:latest
 ```
 
 ---

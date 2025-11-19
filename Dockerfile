@@ -13,6 +13,18 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Build arguments (passed from docker build or Easypanel)
+ARG VITE_API_URL
+ARG VITE_APP_NAME="GestorHS Sistema"
+ARG VITE_APP_VERSION="1.0.0"
+ARG VITE_ENV="production"
+
+# Convert build args to environment variables (required for Vite)
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_APP_NAME=$VITE_APP_NAME
+ENV VITE_APP_VERSION=$VITE_APP_VERSION
+ENV VITE_ENV=$VITE_ENV
+
 # Build application
 RUN npm run build
 

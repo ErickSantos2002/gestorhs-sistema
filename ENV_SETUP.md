@@ -2,9 +2,11 @@
 
 ## Para Deploy no Easypanel
 
+⚠️ **IMPORTANTE:** Essas variáveis precisam estar disponíveis **DURANTE O BUILD**, não apenas em runtime!
+
 ### Variáveis Obrigatórias
 
-Configure estas variáveis no painel do Easypanel em **Environment Variables**:
+Configure estas variáveis no painel do Easypanel em **Environment Variables** ou **Build Arguments**:
 
 ```env
 VITE_API_URL=https://sua-api.dominio.com/api/v1
@@ -17,6 +19,15 @@ VITE_ENV=production
 VITE_APP_NAME=GestorHS Sistema
 VITE_APP_VERSION=1.0.0
 ```
+
+### Como Configurar no Easypanel
+
+1. Vá em **Settings** > **Environment** (ou **Build Arguments**)
+2. Adicione cada variável:
+   - Nome: `VITE_API_URL`
+   - Valor: `https://sua-api.dominio.com/api/v1`
+3. Repita para as demais variáveis
+4. Salve e faça o deploy
 
 ---
 

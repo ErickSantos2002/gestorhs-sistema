@@ -1,61 +1,51 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { Spinner } from '@/components/common';
 
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+// Pages
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+import Bloqueio from './pages/Bloqueio';
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./hooks/useAuth";
+// Componente de proteção de rotas
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
 
-const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
-
-  if (!user || user.role !== "admin") {
+  if (loading) {
     return (
-      <div className="p-6 text-red-600 text-center font-semibold">
-        Acesso negado. Esta página é restrita a administradores.
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
       </div>
     );
   }
 
-  return <>{children}</>;
-};
-
-import Bloqueio from "./pages/Bloqueio"; // importe o novo componente
-
-const RequireVendas: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
-
-  if (!user || (user.role !== "admin" && user.role !== "vendas" && user.role !== "financeiro")) {
-    return <Bloqueio />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
 };
 
-const RequireServicos: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+// Componente de verificação de perfil
+interface RequirePerfilProps {
+  children: React.ReactNode;
+  perfis: string[];
+}
 
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
+const RequirePerfil: React.FC<RequirePerfilProps> = ({ children, perfis }) => {
+  const { user, loading, isPerfil } = useAuth();
 
-  if (!user || (user.role !== "admin" && user.role !== "servicos" && user.role !== "financeiro")) {
-    return <Bloqueio />;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
-  return <>{children}</>;
-};
-
-const RequireVendedores: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
-
-  if (!user || (user.role !== "admin" && user.role !== "vendas" && user.role !== "financeiro")) {
+  if (!user || !isPerfil(perfis)) {
     return <Bloqueio />;
   }
 
@@ -64,7 +54,18 @@ const RequireVendedores: React.FC<{ children: React.ReactNode }> = ({ children }
 
 const AppRoutes: React.FC = () => (
   <Routes>
+    {/* Rota pública */}
     <Route path="/login" element={<Login />} />
+
+    {/* Rotas protegidas */}
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute>
+          <Navigate to="/dashboard" replace />
+        </ProtectedRoute>
+      }
+    />
 
     <Route
       path="/dashboard"
@@ -75,7 +76,69 @@ const AppRoutes: React.FC = () => (
       }
     />
 
-    <Route path="/" element={<Navigate to="/inicio" />} />
+    {/* Empresas - Todos podem acessar */}
+    <Route
+      path="/empresas"
+      element={
+        <ProtectedRoute>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold">Empresas (em breve)</h1>
+          </div>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Equipamentos - Todos podem acessar */}
+    <Route
+      path="/equipamentos"
+      element={
+        <ProtectedRoute>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold">Equipamentos (em breve)</h1>
+          </div>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Ordens de Serviço - Todos podem acessar */}
+    <Route
+      path="/ordens"
+      element={
+        <ProtectedRoute>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold">Ordens de Serviço (em breve)</h1>
+          </div>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Relatórios - Todos podem acessar */}
+    <Route
+      path="/relatorios"
+      element={
+        <ProtectedRoute>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold">Relatórios (em breve)</h1>
+          </div>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Configurações - Apenas admin */}
+    <Route
+      path="/configuracoes/*"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold">Configurações (em breve)</h1>
+            </div>
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* 404 */}
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

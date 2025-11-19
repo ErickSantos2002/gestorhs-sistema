@@ -24,5 +24,16 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+        },
+      },
+    },
   },
 });

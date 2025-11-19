@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Bloqueio from './pages/Bloqueio';
 
+// Empresas
+import { EmpresasList, EmpresaForm, EmpresaDetails } from './pages/empresas';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -81,9 +84,34 @@ const AppRoutes: React.FC = () => (
       path="/empresas"
       element={
         <ProtectedRoute>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold">Empresas (em breve)</h1>
-          </div>
+          <EmpresasList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/novo"
+      element={
+        <ProtectedRoute>
+          <EmpresaForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/:id"
+      element={
+        <ProtectedRoute>
+          <EmpresaDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/:id/editar"
+      element={
+        <ProtectedRoute>
+          <EmpresaForm />
         </ProtectedRoute>
       }
     />

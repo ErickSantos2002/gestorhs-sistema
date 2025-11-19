@@ -8,3 +8,4 @@ export * from './EquipamentoCard';
 export * from './StatusBadge';
 export * from './Timeline';
 export { default as ExportButtons } from './ExportButtons';
+export { default as Modal } from '../modals/Modal';

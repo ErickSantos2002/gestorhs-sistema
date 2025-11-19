@@ -15,6 +15,9 @@ import { EmpresasList, EmpresaForm, EmpresaDetails } from './pages/empresas';
 // Equipamentos
 import { EquipamentosList, EquipamentoForm, EquipamentoDetails } from './pages/equipamentos';
 
+// Ordens de Serviço
+import { OSList, OSForm, OSDetails } from './pages/ordens-servico';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -161,9 +164,25 @@ const AppRoutes: React.FC = () => (
       path="/ordens"
       element={
         <ProtectedRoute>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold">Ordens de Serviço (em breve)</h1>
-          </div>
+          <OSList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/ordens/nova"
+      element={
+        <ProtectedRoute>
+          <OSForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/ordens/:id"
+      element={
+        <ProtectedRoute>
+          <OSDetails />
         </ProtectedRoute>
       }
     />

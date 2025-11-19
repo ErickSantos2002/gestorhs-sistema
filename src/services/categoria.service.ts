@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 import { Categoria } from '@/types';
 
 export interface PaginatedResponse<T> {

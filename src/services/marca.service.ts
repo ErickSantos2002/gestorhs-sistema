@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 import { Marca } from '@/types';
 
 export interface PaginatedResponse<T> {

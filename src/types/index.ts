@@ -241,3 +241,64 @@ export interface RelatorioVencimentos {
   dias_ate_vencimento: number;
   status: 'vencido' | 'vence_30_dias' | 'ok';
 }
+
+export interface RelatorioCalibracoesItem {
+  chave_acesso: string;
+  empresa: string;
+  equipamento: string;
+  data_solicitacao: string;
+  data_entrega?: string;
+  fase: FaseOS;
+  situacao: SituacaoOS;
+  valor: number;
+  numero_certificado?: string;
+}
+
+export interface RelatorioCalibracoesData {
+  items: RelatorioCalibracoesItem[];
+  totais: {
+    total_ordens: number;
+    concluidas: number;
+    em_andamento: number;
+    canceladas: number;
+    valor_total: number;
+  };
+}
+
+export interface RelatorioEquipamentosItem {
+  categoria: string;
+  marca: string;
+  descricao: string;
+  total_cadastrados: number;
+  total_empresas: number;
+  preco_medio: number;
+}
+
+export interface RelatorioEquipamentosData {
+  items: RelatorioEquipamentosItem[];
+  totais: {
+    total_equipamentos: number;
+    total_categorias: number;
+    total_marcas: number;
+  };
+}
+
+export interface RelatorioFinanceiroItem {
+  periodo: string;
+  total_ordens: number;
+  valor_total: number;
+  ticket_medio: number;
+}
+
+export interface RelatorioFinanceiroData {
+  items: RelatorioFinanceiroItem[];
+  totais: {
+    total_ordens: number;
+    valor_total: number;
+    ticket_medio: number;
+  };
+  grafico: {
+    labels: string[];
+    valores: number[];
+  };
+}

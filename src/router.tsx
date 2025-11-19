@@ -18,6 +18,14 @@ import { EquipamentosList, EquipamentoForm, EquipamentoDetails } from './pages/e
 // Ordens de Serviço
 import { OSList, OSForm, OSDetails } from './pages/ordens-servico';
 
+// Relatórios
+import {
+  RelatoriosList,
+  RelatorioCalibracao,
+  RelatorioEquipamentos,
+  RelatorioFinanceiro,
+} from './pages/relatorios';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -192,9 +200,34 @@ const AppRoutes: React.FC = () => (
       path="/relatorios"
       element={
         <ProtectedRoute>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold">Relatórios (em breve)</h1>
-          </div>
+          <RelatoriosList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/calibracoes"
+      element={
+        <ProtectedRoute>
+          <RelatorioCalibracao />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/equipamentos"
+      element={
+        <ProtectedRoute>
+          <RelatorioEquipamentos />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/financeiro"
+      element={
+        <ProtectedRoute>
+          <RelatorioFinanceiro />
         </ProtectedRoute>
       }
     />

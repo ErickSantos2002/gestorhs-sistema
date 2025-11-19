@@ -29,6 +29,9 @@ import {
 // Usuários
 import { UsersList, UserForm, UserDetails } from './pages/usuarios';
 
+// Configurações
+import { ConfiguracoesPage } from './pages/configuracoes';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -282,13 +285,11 @@ const AppRoutes: React.FC = () => (
 
     {/* Configurações - Apenas admin */}
     <Route
-      path="/configuracoes/*"
+      path="/configuracoes"
       element={
         <ProtectedRoute>
           <RequirePerfil perfis={['admin']}>
-            <div className="p-6">
-              <h1 className="text-2xl font-bold">Configurações (em breve)</h1>
-            </div>
+            <ConfiguracoesPage />
           </RequirePerfil>
         </ProtectedRoute>
       }

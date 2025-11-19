@@ -7,4 +7,6 @@ export { ordemServicoService } from './ordem-servico.service';
 export { relatorioService } from './relatorio.service';
 export { uploadService } from './upload.service';
 export { usuarioService } from './usuario.service';
+export { categoriaService } from './categoria.service';
+export { marcaService } from './marca.service';
 export { default as api } from './api';

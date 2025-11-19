@@ -5,3 +5,5 @@ export * from './Spinner';
 export * from './Badge';
 export * from './EmptyState';
 export * from './EquipamentoCard';
+export * from './StatusBadge';
+export * from './Timeline';

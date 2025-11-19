@@ -12,6 +12,9 @@ import Bloqueio from './pages/Bloqueio';
 // Empresas
 import { EmpresasList, EmpresaForm, EmpresaDetails } from './pages/empresas';
 
+// Equipamentos
+import { EquipamentosList, EquipamentoForm, EquipamentoDetails } from './pages/equipamentos';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -121,9 +124,34 @@ const AppRoutes: React.FC = () => (
       path="/equipamentos"
       element={
         <ProtectedRoute>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold">Equipamentos (em breve)</h1>
-          </div>
+          <EquipamentosList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/novo"
+      element={
+        <ProtectedRoute>
+          <EquipamentoForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/:id"
+      element={
+        <ProtectedRoute>
+          <EquipamentoDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/:id/editar"
+      element={
+        <ProtectedRoute>
+          <EquipamentoForm />
         </ProtectedRoute>
       }
     />

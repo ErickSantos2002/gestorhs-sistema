@@ -26,6 +26,9 @@ import {
   RelatorioFinanceiro,
 } from './pages/relatorios';
 
+// Usuários
+import { UsersList, UserForm, UserDetails } from './pages/usuarios';
+
 // Componente de proteção de rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -228,6 +231,51 @@ const AppRoutes: React.FC = () => (
       element={
         <ProtectedRoute>
           <RelatorioFinanceiro />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Usuários - Apenas admin */}
+    <Route
+      path="/usuarios"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UsersList />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/novo"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserForm />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/:id"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserDetails />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/:id/editar"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserForm />
+          </RequirePerfil>
         </ProtectedRoute>
       }
     />

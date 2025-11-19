@@ -8,6 +8,7 @@ import {
   Package,
   FileText,
   BarChart3,
+  Users,
   Settings,
 } from 'lucide-react';
 
@@ -46,6 +47,11 @@ const Sidebar: React.FC = () => {
     },
     ...(user?.perfil === 'admin'
       ? [
+          {
+            label: 'Usuários',
+            to: '/usuarios',
+            icon: Users,
+          },
           {
             label: 'Configurações',
             to: '/configuracoes',

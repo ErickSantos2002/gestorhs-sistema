@@ -484,6 +484,473 @@ api.interceptors.response.use(
 
 ---
 
+## 🌐 API REST Documentation
+
+A API backend é construída com **FastAPI (Python)** e fornece endpoints RESTful completos.
+
+### 📍 Base URL
+
+- **Produção**: `https://gestorhsapi.healthsafetytech.com/api/v1`
+- **Desenvolvimento**: `http://localhost:8000/api/v1`
+- **Documentação Interativa**: `https://gestorhsapi.healthsafetytech.com/docs`
+
+### 🔐 Autenticação
+
+A API usa **JWT (JSON Web Tokens)** para autenticação.
+
+#### Login
+
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "login": "admin",
+  "senha": "admin123"
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 1800
+}
+```
+
+#### Refresh Token
+
+```http
+POST /api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+#### Usuário Atual
+
+```http
+GET /api/v1/auth/me
+Authorization: Bearer {access_token}
+```
+
+### 📊 Estrutura de Paginação
+
+Todos os endpoints de listagem suportam paginação:
+
+**Query Parameters:**
+- `page` - Número da página (padrão: 1)
+- `size` - Itens por página (padrão: 20, máx: 100)
+
+**Resposta:**
+
+```json
+{
+  "items": [...],
+  "total": 150,
+  "page": 1,
+  "size": 20,
+  "pages": 8
+}
+```
+
+---
+
+### 📋 Endpoints Principais
+
+#### 👤 Usuários
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/usuarios` | Listar usuários | ✅ |
+| `GET` | `/usuarios/{id}` | Buscar usuário | ✅ |
+| `POST` | `/usuarios` | Criar usuário (admin) | ✅ Admin |
+| `PUT` | `/usuarios/{id}` | Atualizar usuário (admin) | ✅ Admin |
+| `DELETE` | `/usuarios/{id}` | Deletar usuário (admin) | ✅ Admin |
+| `PATCH` | `/usuarios/{id}/ativar` | Ativar/Desativar | ✅ Admin |
+| `PATCH` | `/usuarios/{id}/senha` | Alterar senha | ✅ |
+
+**Filtros disponíveis:**
+- `nome` - Nome do usuário
+- `email` - Email do usuário
+- `perfil` - Perfil (admin, gerente, tecnico, atendente)
+- `ativo` - Status (S/N)
+
+**Exemplo - Criar Usuário:**
+
+```http
+POST /api/v1/usuarios
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "login": "joao",
+  "senha": "senha123",
+  "perfil": "tecnico",
+  "telefone": "11999999999",
+  "ativo": "S"
+}
+```
+
+---
+
+#### 🏢 Empresas
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/empresas` | Listar empresas | ✅ |
+| `GET` | `/empresas/{id}` | Buscar empresa | ✅ |
+| `POST` | `/empresas` | Criar empresa | ✅ |
+| `PUT` | `/empresas/{id}` | Atualizar empresa | ✅ |
+| `DELETE` | `/empresas/{id}` | Deletar empresa | ✅ |
+| `PATCH` | `/empresas/{id}/ativar` | Ativar/Desativar | ✅ |
+| `PATCH` | `/empresas/{id}/status-contato` | Atualizar status contato | ✅ |
+| `GET` | `/empresas/{id}/historico` | Histórico de alterações | ✅ |
+
+**Filtros disponíveis:**
+- `razao_social` - Razão social
+- `cnpj` - CNPJ (apenas PJ)
+- `cpf` - CPF (apenas PF)
+- `tipo_pessoa` - Tipo (J=PJ, F=PF)
+- `ativo` - Status (S/N)
+- `status_contato` - Status contato (ativo, inativo, perdido)
+- `cidade` - Cidade
+- `estado` - UF (2 letras)
+
+**Exemplo - Criar Empresa PJ:**
+
+```http
+POST /api/v1/empresas
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "tipo_pessoa": "J",
+  "cnpj": "12345678000190",
+  "razao_social": "Empresa XYZ Ltda",
+  "nome_fantasia": "XYZ",
+  "cep": "01310100",
+  "logradouro": "Av. Paulista",
+  "numero": "1000",
+  "bairro": "Bela Vista",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "telefone": "1133334444",
+  "email": "contato@xyz.com.br",
+  "ativo": "S",
+  "status_contato": "ativo"
+}
+```
+
+---
+
+#### 🔧 Equipamentos (Catálogo)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/equipamentos` | Listar equipamentos | ✅ |
+| `GET` | `/equipamentos/{id}` | Buscar equipamento | ✅ |
+| `POST` | `/equipamentos` | Criar equipamento | ✅ |
+| `PUT` | `/equipamentos/{id}` | Atualizar equipamento | ✅ |
+| `DELETE` | `/equipamentos/{id}` | Deletar equipamento | ✅ |
+
+**Filtros disponíveis:**
+- `descricao` - Descrição do equipamento
+- `codigo` - Código único
+- `categoria_id` - ID da categoria
+- `marca_id` - ID da marca
+- `ativo` - Status (S/N)
+- `destaque` - Destaque (S/N)
+
+**Exemplo - Criar Equipamento:**
+
+```http
+POST /api/v1/equipamentos
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "categoria_id": 1,
+  "marca_id": 2,
+  "codigo": "BAF-001",
+  "descricao": "Bafômetro Digital Portátil",
+  "modelo": "AD500",
+  "periodo_calibracao_dias": 365,
+  "preco_por": 150.00,
+  "ativo": "S",
+  "destaque": "S"
+}
+```
+
+---
+
+#### 🔗 Equipamentos-Empresa (Vinculação)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/equipamentos-empresa` | Listar vinculações | ✅ |
+| `GET` | `/equipamentos-empresa/{id}` | Buscar vinculação | ✅ |
+| `POST` | `/equipamentos-empresa` | Vincular equipamento | ✅ |
+| `PUT` | `/equipamentos-empresa/{id}` | Atualizar vinculação | ✅ |
+| `PATCH` | `/equipamentos-empresa/{id}/recusar-calibracao` | Marcar "não vai fazer" | ✅ |
+| `GET` | `/equipamentos-empresa/vencimentos/proximos` | Vencimentos próximos | ✅ |
+
+**Filtros disponíveis:**
+- `empresa_id` - ID da empresa
+- `equipamento_id` - ID do equipamento
+- `numero_serie` - Número de série
+- `status` - Status (A=Ativo, I=Inativo, M=Manutenção, B=Baixado)
+- `vencimento_ate` - Data limite de vencimento
+
+**Exemplo - Vincular Equipamento:**
+
+```http
+POST /api/v1/equipamentos-empresa
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "equipamento_id": 5,
+  "empresa_id": 10,
+  "numero_serie": "SN123456",
+  "numero_patrimonio": "PAT-001",
+  "data_compra": "2024-01-15",
+  "status": "A",
+  "ativo": "S"
+}
+```
+
+---
+
+#### 📝 Ordens de Serviço
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/ordens-servico` | Listar OS | ✅ |
+| `GET` | `/ordens-servico/{id}` | Buscar OS | ✅ |
+| `GET` | `/ordens-servico/chave/{chave}` | Buscar por chave (público) | ❌ |
+| `POST` | `/ordens-servico` | Criar OS | ✅ |
+| `PUT` | `/ordens-servico/{id}` | Atualizar OS | ✅ |
+| `DELETE` | `/ordens-servico/{id}` | Cancelar OS | ✅ |
+| `PATCH` | `/ordens-servico/{id}/fase` | Mudar fase | ✅ |
+| `POST` | `/ordens-servico/{id}/finalizar` | Finalizar OS | ✅ |
+| `PATCH` | `/ordens-servico/{id}/pagar` | Marcar como pago | ✅ |
+| `GET` | `/ordens-servico/{id}/logs` | Logs da OS | ✅ |
+
+**Filtros disponíveis:**
+- `empresa_id` - ID da empresa
+- `equipamento_empresa_id` - ID do equipamento vinculado
+- `fase_id` - ID da fase (1-8)
+- `situacao_servico` - Situação (E=Em espera, A=Andamento, F=Finalizada, C=Cancelada)
+- `pago` - Pago (S/N)
+- `data_inicio` - Data inicial
+- `data_fim` - Data final
+
+**Fases da OS:**
+1. Solicitado
+2. Enviado
+3. Recebido
+4. Em Calibração
+5. Calibrado
+6. Retornando
+7. Entregue
+8. Cancelado
+
+**Exemplo - Criar OS:**
+
+```http
+POST /api/v1/ordens-servico
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "empresa_id": 10,
+  "equipamento_empresa_id": 25,
+  "observacoes": "Calibração anual",
+  "valor_servico": 150.00,
+  "valor_frete_envio": 20.00,
+  "valor_frete_retorno": 20.00
+}
+```
+
+**Exemplo - Finalizar OS:**
+
+```http
+POST /api/v1/ordens-servico/123/finalizar
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "data_calibracao": "2025-11-19T14:30:00",
+  "certificado_numero": "CERT-2025-001",
+  "teste_1": "0.25",
+  "teste_2": "0.26",
+  "teste_3": "0.25",
+  "teste_media": "0.253",
+  "situacao_calibracao": "Aprovado",
+  "certificado_temperatura": "23°C",
+  "certificado_pressao": "1013 hPa"
+}
+```
+
+---
+
+#### 📊 Dashboard
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/dashboard/principal` | Métricas principais (7 cards) | ✅ |
+| `GET` | `/dashboard/andamento` | OSs em andamento | ✅ |
+| `GET` | `/dashboard/calibracoes-atrasadas` | Calibrações vencidas | ✅ |
+| `GET` | `/dashboard/calibracoes-proximas` | Vencimentos próximos | ✅ |
+| `GET` | `/dashboard/finalizadas` | OSs finalizadas (30 dias) | ✅ |
+| `GET` | `/dashboard/grafico-mensal` | Gráfico de OSs por mês | ✅ |
+
+**Exemplo - Métricas Principais:**
+
+```http
+GET /api/v1/dashboard/principal
+Authorization: Bearer {token}
+```
+
+**Resposta:**
+
+```json
+{
+  "ordens_andamento": 563,
+  "clientes_atrasados": 830,
+  "calibracoes_atrasadas": 2815,
+  "calibracoes_proximas": 106,
+  "ordens_finalizadas_30dias": 9,
+  "calibracoes_nao_fazer": 121,
+  "clientes_perdidos": 6
+}
+```
+
+---
+
+### 🔧 Categorias e Marcas
+
+Endpoints para configurações (admin apenas):
+
+**Categorias:**
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/equipamentos/categorias` | Listar categorias |
+| `POST` | `/equipamentos/categorias` | Criar categoria |
+| `PUT` | `/equipamentos/categorias/{id}` | Atualizar categoria |
+| `DELETE` | `/equipamentos/categorias/{id}` | Deletar categoria |
+
+**Marcas:**
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/equipamentos/marcas` | Listar marcas |
+| `POST` | `/equipamentos/marcas` | Criar marca |
+| `PUT` | `/equipamentos/marcas/{id}` | Atualizar marca |
+| `DELETE` | `/equipamentos/marcas/{id}` | Deletar marca |
+
+---
+
+### 🏥 Health Checks
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/health` | Health check básico | ❌ |
+| `GET` | `/health/detailed` | Health check detalhado | ❌ |
+
+---
+
+### 📦 Padrões de Resposta
+
+#### Sucesso
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operação realizada com sucesso"
+}
+```
+
+#### Erro de Validação (422)
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "email"],
+      "msg": "value is not a valid email address",
+      "type": "value_error.email"
+    }
+  ]
+}
+```
+
+#### Erro de Autenticação (401)
+
+```json
+{
+  "detail": "Could not validate credentials"
+}
+```
+
+#### Erro de Permissão (403)
+
+```json
+{
+  "detail": "Not enough permissions"
+}
+```
+
+#### Erro Not Found (404)
+
+```json
+{
+  "detail": "Resource not found"
+}
+```
+
+---
+
+### 🔒 Códigos de Status HTTP
+
+| Código | Descrição |
+|--------|-----------|
+| `200` | OK - Sucesso |
+| `201` | Created - Recurso criado |
+| `204` | No Content - Sucesso sem conteúdo |
+| `400` | Bad Request - Requisição inválida |
+| `401` | Unauthorized - Não autenticado |
+| `403` | Forbidden - Sem permissão |
+| `404` | Not Found - Recurso não encontrado |
+| `422` | Unprocessable Entity - Erro de validação |
+| `500` | Internal Server Error - Erro do servidor |
+
+---
+
+### 📚 Documentação Interativa
+
+A API possui documentação interativa (Swagger UI) disponível em:
+
+**🔗 https://gestorhsapi.healthsafetytech.com/docs**
+
+Recursos:
+- Testar endpoints diretamente no navegador
+- Ver schemas completos de request/response
+- Exemplos de uso
+- Autenticação integrada
+
+---
+
 ## 🚀 Deploy
 
 ### Build para Produção

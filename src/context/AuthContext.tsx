@@ -76,6 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       console.error('Erro ao fazer logout:', err);
     } finally {
+      // Limpar tokens do localStorage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       setUser(null);
     }
   };

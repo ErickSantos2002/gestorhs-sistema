@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { empresaService } from '@/services';
-import { Empresa } from '@/types';
-import { Button, Spinner, Badge } from '@/components/common';
-import { ArrowLeft, Edit, Trash2, Building2 } from 'lucide-react';
+import { empresaService, equipamentoEmpresaService, equipamentoService } from '@/services';
+import { Empresa, EquipamentoEmpresa, Equipamento } from '@/types';
+import { Button, Spinner, Badge, Modal, Select, Input } from '@/components/common';
+import { ArrowLeft, Edit, Trash2, Building2, Plus, Package } from 'lucide-react';
 import { formatCPFCNPJ, formatPhone, formatDate } from '@/utils';
 import toast from 'react-hot-toast';
 
@@ -13,10 +13,27 @@ const EmpresaDetails: React.FC = () => {
 
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'equipamentos' | 'ordens' | 'historico'>('equipamentos');
+
+  // Estados para equipamentos
+  const [equipamentosEmpresa, setEquipamentosEmpresa] = useState<EquipamentoEmpresa[]>([]);
+  const [equipamentosDisponiveis, setEquipamentosDisponiveis] = useState<Equipamento[]>([]);
+  const [loadingEquipamentos, setLoadingEquipamentos] = useState(false);
+  const [showModalEquipamento, setShowModalEquipamento] = useState(false);
+  const [equipamentoSelecionado, setEquipamentoSelecionado] = useState<number | ''>('');
+  const [numeroSerie, setNumeroSerie] = useState('');
+  const [numeroPatrimonio, setNumeroPatrimonio] = useState('');
 
   useEffect(() => {
     loadEmpresa();
+    loadEquipamentosDisponiveis();
   }, [id]);
+
+  useEffect(() => {
+    if (activeTab === 'equipamentos' && empresa) {
+      loadEquipamentosEmpresa();
+    }
+  }, [activeTab, empresa]);
 
   const loadEmpresa = async () => {
     try {
@@ -46,6 +63,64 @@ const EmpresaDetails: React.FC = () => {
     } catch (error) {
       console.error('Erro ao excluir empresa:', error);
       toast.error('Erro ao excluir empresa');
+    }
+  };
+
+  const loadEquipamentosEmpresa = async () => {
+    if (!empresa) return;
+
+    try {
+      setLoadingEquipamentos(true);
+      const data = await equipamentoEmpresaService.getByEmpresa(empresa.id);
+      setEquipamentosEmpresa(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Erro ao carregar equipamentos:', error);
+      toast.error('Erro ao carregar equipamentos');
+    } finally {
+      setLoadingEquipamentos(false);
+    }
+  };
+
+  const loadEquipamentosDisponiveis = async () => {
+    try {
+      const response = await equipamentoService.list({ size: 100, ativo: 'S' });
+      setEquipamentosDisponiveis(response.items || []);
+    } catch (error) {
+      console.error('Erro ao carregar equipamentos disponíveis:', error);
+    }
+  };
+
+  const handleAdicionarEquipamento = async () => {
+    if (!empresa || !equipamentoSelecionado) return;
+
+    try {
+      await equipamentoEmpresaService.create({
+        empresa_id: empresa.id,
+        equipamento_id: equipamentoSelecionado,
+        numero_serie: numeroSerie || undefined,
+        numero_patrimonio: numeroPatrimonio || undefined,
+      });
+
+      toast.success('Equipamento vinculado com sucesso!');
+      setShowModalEquipamento(false);
+      setEquipamentoSelecionado('');
+      setNumeroSerie('');
+      setNumeroPatrimonio('');
+      loadEquipamentosEmpresa();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erro ao vincular equipamento');
+    }
+  };
+
+  const handleRemoverEquipamento = async (equipamentoEmpresaId: number) => {
+    if (!confirm('Deseja realmente desvincular este equipamento?')) return;
+
+    try {
+      await equipamentoEmpresaService.delete(equipamentoEmpresaId);
+      toast.success('Equipamento desvinculado com sucesso!');
+      loadEquipamentosEmpresa();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erro ao desvincular equipamento');
     }
   };
 
@@ -147,13 +222,19 @@ const EmpresaDetails: React.FC = () => {
 
           <dl className="space-y-4">
             <InfoItem
-              label={empresa.tipo_pessoa === 'PJ' ? 'CNPJ' : 'CPF'}
-              value={formatCPFCNPJ(empresa.cnpj_cpf)}
+              label={empresa.tipo_pessoa === 'PJ' || empresa.tipo_pessoa === 'J' ? 'CNPJ' : 'CPF'}
+              value={formatCPFCNPJ(empresa.cnpj_cpf || empresa.cpf || empresa.cnpj)}
             />
             <InfoItem label="Inscrição Estadual" value={empresa.inscricao_estadual} />
             <InfoItem label="Inscrição Municipal" value={empresa.inscricao_municipal} />
-            <InfoItem label="Cadastrado em" value={formatDate(empresa.created_at)} />
-            <InfoItem label="Última atualização" value={formatDate(empresa.updated_at)} />
+            <InfoItem
+              label="Cadastrado em"
+              value={empresa.data_criacao ? formatDate(empresa.data_criacao) : undefined}
+            />
+            <InfoItem
+              label="Última atualização"
+              value={empresa.data_atualizacao ? formatDate(empresa.data_atualizacao) : undefined}
+            />
           </dl>
         </div>
 
@@ -201,24 +282,183 @@ const EmpresaDetails: React.FC = () => {
         </div>
       )}
 
-      {/* Tabs futuras */}
+      {/* Tabs */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6">
-        <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700">
-          <button className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-600">
+        <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
+          <button
+            onClick={() => setActiveTab('equipamentos')}
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === 'equipamentos'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
             Equipamentos
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+          <button
+            onClick={() => setActiveTab('ordens')}
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === 'ordens'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
             Ordens de Serviço
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+          <button
+            onClick={() => setActiveTab('historico')}
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === 'historico'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
             Histórico
           </button>
         </div>
 
-        <div className="py-8 text-center text-gray-500 dark:text-gray-400">
-          <p>Essas funcionalidades serão implementadas nas próximas fases</p>
-        </div>
+        {/* Conteúdo da aba Equipamentos */}
+        {activeTab === 'equipamentos' && (
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Equipamentos Vinculados
+              </h3>
+              <Button
+                icon={<Plus className="w-5 h-5" />}
+                onClick={() => setShowModalEquipamento(true)}
+                size="sm"
+              >
+                Adicionar Equipamento
+              </Button>
+            </div>
+
+            {loadingEquipamentos ? (
+              <div className="flex justify-center py-8">
+                <Spinner />
+              </div>
+            ) : equipamentosEmpresa.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <Package className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>Nenhum equipamento vinculado</p>
+                <p className="text-sm mt-1">Clique em "Adicionar Equipamento" para começar</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {equipamentosEmpresa.map((eq) => (
+                  <div
+                    key={eq.id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">
+                        {eq.equipamento?.descricao || `Equipamento ID: ${eq.equipamento_id}`}
+                      </h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoverEquipamento(eq.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
+                    {eq.numero_serie && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Série: {eq.numero_serie}
+                      </p>
+                    )}
+                    {eq.numero_patrimonio && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Patrimônio: {eq.numero_patrimonio}
+                      </p>
+                    )}
+                    <div className="mt-2">
+                      <Badge variant={eq.ativo === 'S' ? 'success' : 'secondary'}>
+                        {eq.ativo === 'S' ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Outras abas */}
+        {activeTab === 'ordens' && (
+          <div className="py-8 text-center text-gray-500 dark:text-gray-400">
+            <p>Ordens de Serviço serão listadas aqui</p>
+          </div>
+        )}
+
+        {activeTab === 'historico' && (
+          <div className="py-8 text-center text-gray-500 dark:text-gray-400">
+            <p>Histórico será exibido aqui</p>
+          </div>
+        )}
       </div>
+
+      {/* Modal de Adicionar Equipamento */}
+      <Modal
+        isOpen={showModalEquipamento}
+        onClose={() => {
+          setShowModalEquipamento(false);
+          setEquipamentoSelecionado('');
+          setNumeroSerie('');
+          setNumeroPatrimonio('');
+        }}
+        title="Adicionar Equipamento"
+      >
+        <div className="space-y-4">
+          <Select
+            label="Equipamento"
+            required
+            value={equipamentoSelecionado}
+            onChange={(e) => setEquipamentoSelecionado(Number(e.target.value) || '')}
+            options={[
+              { value: '', label: 'Selecione um equipamento' },
+              ...equipamentosDisponiveis.map((eq) => ({
+                value: eq.id,
+                label: `${eq.codigo} - ${eq.descricao}`,
+              })),
+            ]}
+          />
+
+          <Input
+            label="Número de Série"
+            value={numeroSerie}
+            onChange={(e) => setNumeroSerie(e.target.value)}
+            placeholder="Opcional"
+          />
+
+          <Input
+            label="Número de Patrimônio"
+            value={numeroPatrimonio}
+            onChange={(e) => setNumeroPatrimonio(e.target.value)}
+            placeholder="Opcional"
+          />
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowModalEquipamento(false);
+                setEquipamentoSelecionado('');
+                setNumeroSerie('');
+                setNumeroPatrimonio('');
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAdicionarEquipamento}
+              disabled={!equipamentoSelecionado}
+            >
+              Adicionar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

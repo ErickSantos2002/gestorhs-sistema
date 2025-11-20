@@ -22,8 +22,28 @@ export const categoriaService = {
     search?: string;
     ativo?: string;
   }): Promise<PaginatedResponse<Categoria>> {
-    const response = await api.get('/equipamentos/categorias', { params });
-    return response.data;
+    // Filtrar parâmetros vazios/undefined
+    const cleanParams: Record<string, any> = {};
+    if (params?.page) cleanParams.page = params.page;
+    if (params?.size) cleanParams.size = params.size;
+    if (params?.search) cleanParams.search = params.search;
+    if (params?.ativo) cleanParams.ativo = params.ativo;
+
+    const response = await api.get('/equipamentos/categorias', { params: cleanParams });
+    const data = response.data.data || response.data;
+
+    // Mapear estrutura do backend para o formato esperado pelo frontend
+    if (data.pagination) {
+      return {
+        items: data.items,
+        total: data.pagination.total,
+        page: data.pagination.page,
+        size: data.pagination.size,
+        pages: data.pagination.pages,
+      };
+    }
+
+    return data;
   },
 
   async getById(id: number): Promise<Categoria> {

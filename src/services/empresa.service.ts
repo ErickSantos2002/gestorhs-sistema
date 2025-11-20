@@ -14,22 +14,22 @@ interface ListEmpresasParams {
 export const empresaService = {
   async list(params?: ListEmpresasParams): Promise<PaginatedResponse<Empresa>> {
     const response = await api.get('/empresas', { params });
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async getById(id: number): Promise<Empresa> {
     const response = await api.get(`/empresas/${id}`);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async create(data: EmpresaFormData): Promise<Empresa> {
     const response = await api.post('/empresas', data);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async update(id: number, data: Partial<EmpresaFormData>): Promise<Empresa> {
     const response = await api.put(`/empresas/${id}`, data);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async delete(id: number): Promise<void> {
@@ -45,11 +45,11 @@ export const empresaService = {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async getHistorico(id: number): Promise<any[]> {
     const response = await api.get(`/empresas/${id}/historico`);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 };

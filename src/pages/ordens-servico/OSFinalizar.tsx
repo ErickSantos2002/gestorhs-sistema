@@ -136,7 +136,10 @@ const OSFinalizar: React.FC<OSFinalizarProps> = ({ isOpen, onClose, os, onSucces
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            OS #{os.chave_acesso} - {os.equipamento_empresa.equipamento?.descricao}
+            OS #{os.chave_acesso}
+            {os.equipamento_empresa?.equipamento?.descricao &&
+              ` - ${os.equipamento_empresa.equipamento.descricao}`
+            }
           </p>
         </div>
 

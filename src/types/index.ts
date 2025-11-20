@@ -50,8 +50,10 @@ export interface DashboardMetrics {
 // ==================== EMPRESA ====================
 export interface Empresa {
   id: number;
-  tipo_pessoa: 'PJ' | 'PF';
-  cnpj_cpf: string;
+  tipo_pessoa: 'PJ' | 'PF' | 'J' | 'F'; // Backend pode retornar J/F
+  cnpj_cpf?: string; // Campo unificado (pode vir null do backend)
+  cpf?: string; // Backend retorna CPF separado para PF
+  cnpj?: string; // Backend retorna CNPJ separado para PJ
   razao_social: string;
   nome_fantasia?: string;
   inscricao_estadual?: string;
@@ -69,10 +71,17 @@ export interface Empresa {
   email: string;
   observacoes?: string;
   logo?: string;
+  imagem?: string;
   ativo: string;
   status_contato: 'ativo' | 'inativo' | 'perdido';
-  created_at: string;
-  updated_at: string;
+  // Campos de data (backend retorna estes nomes)
+  data_criacao?: string;
+  data_atualizacao?: string;
+  data_cadastro?: string;
+  data_ultima_visita?: string;
+  // Campos antigos (manter para compatibilidade)
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface EmpresaFormData {
@@ -120,18 +129,36 @@ export interface Equipamento {
   codigo: string;
   descricao: string;
   modelo?: string;
-  especificacoes?: string;
+  detalhes?: string;
+  especificacoes_tecnicas?: string;
+  peso_calibracao?: string | number;
   periodo_calibracao_dias: number;
-  preco_venda?: number;
-  custo?: number;
-  imagem?: string;
-  video?: string;
+  preco_de?: string | number;
+  preco_por?: string | number;
+  custo?: string | number;
+  peso?: string | number;
+  estoque_minimo?: number;
+  estoque_maximo?: number;
+  estoque_atual?: number;
   tags?: string;
+  palavras_chave?: string;
+  descricao_seo?: string;
+  imagem?: string;
+  video_url?: string;
+  visualizacoes?: number;
   ativo: string;
+  destaque?: string;
   categoria?: Categoria;
   marca?: Marca;
-  created_at: string;
-  updated_at: string;
+  data_cadastro?: string;
+  data_criacao?: string;
+  data_atualizacao?: string;
+  // Campos antigos para compatibilidade
+  especificacoes?: string;
+  preco_venda?: number;
+  video?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface EquipamentoFormData {
@@ -140,12 +167,21 @@ export interface EquipamentoFormData {
   codigo: string;
   descricao: string;
   modelo?: string;
-  especificacoes?: string;
+  detalhes?: string;
+  especificacoes_tecnicas?: string;
   periodo_calibracao_dias: number;
-  preco_venda?: number;
+  preco_de?: number;
+  preco_por?: number;
   custo?: number;
+  peso_calibracao?: number;
+  peso?: number;
+  estoque_minimo?: number;
+  estoque_maximo?: number;
   tags?: string;
+  palavras_chave?: string;
+  descricao_seo?: string;
   ativo?: string;
+  destaque?: string;
 }
 
 // ==================== EQUIPAMENTO EMPRESA ====================
@@ -195,6 +231,7 @@ export interface OrdemServico {
   equipamento_empresa_id: number;
   chave_acesso: string;
   fase: FaseOS;
+  fase_id?: number;
   situacao: SituacaoOS;
   data_solicitacao: string;
   data_envio?: string;
@@ -208,10 +245,18 @@ export interface OrdemServico {
   observacoes?: string;
   numero_certificado?: string;
   certificado_pdf?: string;
+  certificado?: string; // Alias para certificado_pdf
+  teste_1?: number;
+  teste_2?: number;
+  teste_3?: number;
+  media?: number;
+  situacao_aprovacao?: 'aprovado' | 'reprovado';
   empresa?: Empresa;
   equipamento_empresa?: EquipamentoEmpresa;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
+  data_criacao?: string;
+  data_atualizacao?: string;
 }
 
 export interface OrdemServicoFormData {
@@ -229,6 +274,7 @@ export interface FinalizarOSData {
   teste_3?: number;
   media?: number;
   situacao_aprovacao: 'aprovado' | 'reprovado';
+  certificado?: string;
 }
 
 // ==================== RELATÓRIOS ====================

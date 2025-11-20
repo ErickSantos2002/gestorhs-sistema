@@ -116,7 +116,7 @@ const Dashboard: React.FC = () => {
             value={metrics.ordens_andamento}
             subtitle="Ordens"
             color="blue"
-            onClick={() => navigate('/ordens?status=andamento')}
+            onClick={() => navigate('/ordens?situacao=andamento')}
           />
 
           <MetricCard
@@ -125,7 +125,6 @@ const Dashboard: React.FC = () => {
             value={metrics.clientes_atrasados}
             subtitle="Clientes"
             color="red"
-            onClick={() => navigate('/dashboard/atrasados')}
           />
 
           <MetricCard
@@ -134,7 +133,6 @@ const Dashboard: React.FC = () => {
             value={metrics.calibracoes_atrasadas}
             subtitle="Calibragens"
             color="red"
-            onClick={() => navigate('/dashboard/calibracoes-atrasadas')}
           />
 
           <MetricCard
@@ -143,7 +141,6 @@ const Dashboard: React.FC = () => {
             value={metrics.calibracoes_proximas}
             subtitle="Calibrações"
             color="yellow"
-            onClick={() => navigate('/dashboard/calibracoes-proximas')}
           />
 
           <MetricCard
@@ -152,7 +149,7 @@ const Dashboard: React.FC = () => {
             value={metrics.ordens_finalizadas_30dias}
             subtitle="Últimos 30 dias"
             color="green"
-            onClick={() => navigate('/dashboard/finalizadas')}
+            onClick={() => navigate('/ordens?situacao=concluida')}
           />
 
           <MetricCard
@@ -161,7 +158,6 @@ const Dashboard: React.FC = () => {
             value={metrics.calibracoes_nao_fazer}
             subtitle="Calibragens"
             color="gray"
-            onClick={() => navigate('/dashboard/nao-fazer')}
           />
 
           <MetricCard
@@ -170,7 +166,6 @@ const Dashboard: React.FC = () => {
             value={metrics.clientes_perdidos}
             subtitle="Sem contato"
             color="orange"
-            onClick={() => navigate('/dashboard/perdidos')}
           />
         </div>
       )}
@@ -178,7 +173,7 @@ const Dashboard: React.FC = () => {
       {/* Rodapé com info */}
       <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
         <p className="text-sm text-blue-900 dark:text-blue-200">
-          💡 <strong>Dica:</strong> Clique nos cards acima para ver mais detalhes sobre cada métrica.
+          💡 <strong>Dica:</strong> Clique nos cards "Andamento" e "Finalizadas" para ver as ordens filtradas.
         </p>
       </div>
     </div>

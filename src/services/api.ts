@@ -26,6 +26,11 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
 
+    // Não interceptar erros da rota de login
+    if (originalRequest.url?.includes('/auth/login')) {
+      return Promise.reject(error);
+    }
+
     // Se erro 401 e não é retry
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

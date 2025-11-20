@@ -14,12 +14,25 @@ interface ListEquipamentosParams {
 export const equipamentoService = {
   async list(params?: ListEquipamentosParams): Promise<PaginatedResponse<Equipamento>> {
     const response = await api.get('/equipamentos', { params });
-    return response.data.data;
+    const data = response.data.data || response.data;
+
+    // Mapear estrutura do backend para o formato esperado pelo frontend
+    if (data.pagination) {
+      return {
+        items: data.items,
+        total: data.pagination.total,
+        page: data.pagination.page,
+        size: data.pagination.size,
+        pages: data.pagination.pages,
+      };
+    }
+
+    return data;
   },
 
   async getById(id: number): Promise<Equipamento> {
     const response = await api.get(`/equipamentos/${id}`);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async create(data: EquipamentoFormData): Promise<Equipamento> {
@@ -62,8 +75,17 @@ export const equipamentoService = {
 
   // Categorias
   async listCategorias(): Promise<Categoria[]> {
-    const response = await api.get('/equipamentos/categorias');
-    return response.data.data;
+    const response = await api.get('/equipamentos/categorias', {
+      params: { size: 100 }, // Buscar todas as categorias
+    });
+    const data = response.data.data || response.data;
+
+    // Se vier com paginação, extrair apenas items
+    if (data.items) {
+      return data.items;
+    }
+
+    return data;
   },
 
   async createCategoria(data: { nome: string; descricao?: string }): Promise<Categoria> {
@@ -73,8 +95,17 @@ export const equipamentoService = {
 
   // Marcas
   async listMarcas(): Promise<Marca[]> {
-    const response = await api.get('/equipamentos/marcas');
-    return response.data.data;
+    const response = await api.get('/equipamentos/marcas', {
+      params: { size: 100 }, // Buscar todas as marcas
+    });
+    const data = response.data.data || response.data;
+
+    // Se vier com paginação, extrair apenas items
+    if (data.items) {
+      return data.items;
+    }
+
+    return data;
   },
 
   async createMarca(data: { nome: string; descricao?: string }): Promise<Marca> {

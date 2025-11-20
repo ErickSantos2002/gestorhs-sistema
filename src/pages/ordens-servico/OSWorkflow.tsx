@@ -61,10 +61,7 @@ const OSWorkflow: React.FC<OSWorkflowProps> = ({ isOpen, onClose, os, onSuccess 
     try {
       setLoading(true);
 
-      await ordemServicoService.mudarFase(os.id, {
-        nova_fase: novaFase,
-        observacoes: observacoes || undefined,
-      });
+      await ordemServicoService.mudarFase(os.id, novaFase, observacoes || undefined);
 
       toast.success('Fase alterada com sucesso');
       onSuccess();

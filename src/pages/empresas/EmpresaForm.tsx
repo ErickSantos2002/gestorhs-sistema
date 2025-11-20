@@ -80,7 +80,21 @@ const EmpresaForm: React.FC = () => {
 
       // Preencher formulário
       Object.keys(empresa).forEach((key) => {
-        setValue(key as any, empresa[key as keyof typeof empresa]);
+        const value = empresa[key as keyof typeof empresa];
+
+        // Converter tipo_pessoa do backend (J/F) para o formato do frontend (PJ/PF)
+        if (key === 'tipo_pessoa') {
+          setValue('tipo_pessoa', value === 'J' ? 'PJ' : 'PF');
+        }
+        // Backend retorna CPF/CNPJ em campos separados (cpf ou cnpj)
+        else if (key === 'cpf' || key === 'cnpj') {
+          if (value) {
+            setValue('cnpj_cpf', value as string);
+          }
+        }
+        else {
+          setValue(key as any, value);
+        }
       });
     } catch (error) {
       console.error('Erro ao carregar empresa:', error);
@@ -125,11 +139,22 @@ const EmpresaForm: React.FC = () => {
     try {
       setLoading(true);
 
+      // Limpar formatação dos campos antes de enviar
+      const cleanData = {
+        ...data,
+        tipo_pessoa: data.tipo_pessoa === 'PJ' ? 'J' : 'F',
+        cnpj_cpf: data.cnpj_cpf.replace(/\D/g, ''), // Remove formatação
+        cep: data.cep.replace(/\D/g, ''), // Remove formatação
+        telefone: data.telefone?.replace(/\D/g, '') || '', // Remove formatação
+        celular: data.celular?.replace(/\D/g, '') || undefined, // Remove formatação
+        whatsapp: data.whatsapp?.replace(/\D/g, '') || undefined, // Remove formatação
+      };
+
       if (isEditing) {
-        await empresaService.update(Number(id), data);
+        await empresaService.update(Number(id), cleanData as any);
         toast.success('Empresa atualizada com sucesso');
       } else {
-        await empresaService.create(data);
+        await empresaService.create(cleanData as any);
         toast.success('Empresa cadastrada com sucesso');
       }
 

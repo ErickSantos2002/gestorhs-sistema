@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/HS2.ico";
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const [menuVisivel, setMenuVisivel] = useState(false);
   const [menuAnimado, setMenuAnimado] = useState(false);
@@ -16,7 +16,7 @@ const Header: React.FC = () => {
   if (location.pathname === "/login") return null;
 
   const handleLogout = () => {
-    logout();
+    signOut();
     navigate("/login");
   };
 

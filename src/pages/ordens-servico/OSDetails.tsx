@@ -132,7 +132,7 @@ const OSDetails: React.FC = () => {
         data = os.data_entrega;
         break;
       case 'cancelado':
-        data = os.updated_at;
+        data = os.data_atualizacao || os.updated_at;
         break;
     }
 
@@ -187,11 +187,11 @@ const OSDetails: React.FC = () => {
               </Button>
             )}
 
-            {os.certificado && (
+            {(os.certificado || os.certificado_pdf) && (
               <Button
                 variant="secondary"
                 icon={<FileText className="w-5 h-5" />}
-                onClick={() => window.open(os.certificado, '_blank')}
+                onClick={() => window.open(os.certificado || os.certificado_pdf, '_blank')}
               >
                 Ver Certificado
               </Button>
@@ -218,30 +218,46 @@ const OSDetails: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Cliente</p>
-                <button
-                  onClick={() => navigate(`/empresas/${os.empresa.id}`)}
-                  className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left"
-                >
-                  {os.empresa.razao_social}
-                </button>
-                {os.empresa.nome_fantasia && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {os.empresa.nome_fantasia}
+                {os.empresa ? (
+                  <>
+                    <button
+                      onClick={() => navigate(`/empresas/${os.empresa.id}`)}
+                      className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left"
+                    >
+                      {os.empresa.razao_social}
+                    </button>
+                    {os.empresa.nome_fantasia && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {os.empresa.nome_fantasia}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Empresa ID: {os.empresa_id}
                   </p>
                 )}
               </div>
 
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Equipamento</p>
-                <button
-                  onClick={() => navigate(`/equipamentos/${os.equipamento_empresa.equipamento?.id}`)}
-                  className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left"
-                >
-                  {os.equipamento_empresa.equipamento?.descricao}
-                </button>
-                {os.equipamento_empresa.numero_serie && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    NS: {os.equipamento_empresa.numero_serie}
+                {os.equipamento_empresa?.equipamento ? (
+                  <>
+                    <button
+                      onClick={() => navigate(`/equipamentos/${os.equipamento_empresa.equipamento.id}`)}
+                      className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left"
+                    >
+                      {os.equipamento_empresa.equipamento.descricao}
+                    </button>
+                    {os.equipamento_empresa.numero_serie && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        NS: {os.equipamento_empresa.numero_serie}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Equipamento-Empresa ID: {os.equipamento_empresa_id}
                   </p>
                 )}
               </div>

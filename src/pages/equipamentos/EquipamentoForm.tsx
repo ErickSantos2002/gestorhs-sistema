@@ -16,11 +16,14 @@ const equipamentoSchema = z.object({
   codigo: z.string().min(1, 'Código é obrigatório'),
   descricao: z.string().min(3, 'Descrição é obrigatória'),
   modelo: z.string().optional(),
-  especificacoes: z.string().optional(),
+  detalhes: z.string().optional(),
+  especificacoes_tecnicas: z.string().optional(),
   periodo_calibracao_dias: z.number().min(1, 'Período de calibração é obrigatório'),
-  preco_venda: z.number().optional(),
+  preco_de: z.number().optional(),
+  preco_por: z.number().optional(),
   custo: z.number().optional(),
   tags: z.string().optional(),
+  ativo: z.string().optional(),
 });
 
 type EquipamentoFormValues = z.infer<typeof equipamentoSchema>;
@@ -195,19 +198,46 @@ const EquipamentoForm: React.FC = () => {
               />
 
               <Input
-                label="Preço de Venda"
+                label="Preço De"
                 type="number"
                 step="0.01"
-                {...register('preco_venda', { valueAsNumber: true })}
-                error={errors.preco_venda?.message}
+                {...register('preco_de', { valueAsNumber: true })}
+                error={errors.preco_de?.message}
+              />
+
+              <Input
+                label="Preço Por"
+                type="number"
+                step="0.01"
+                {...register('preco_por', { valueAsNumber: true })}
+                error={errors.preco_por?.message}
+              />
+
+              <Input
+                label="Custo"
+                type="number"
+                step="0.01"
+                {...register('custo', { valueAsNumber: true })}
+                error={errors.custo?.message}
               />
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Especificações
+                  Detalhes
                 </label>
                 <textarea
-                  {...register('especificacoes')}
+                  {...register('detalhes')}
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Especificações Técnicas
+                </label>
+                <textarea
+                  {...register('especificacoes_tecnicas')}
                   rows={4}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />

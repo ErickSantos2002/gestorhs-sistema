@@ -167,12 +167,21 @@ export interface EquipamentoFormData {
   codigo: string;
   descricao: string;
   modelo?: string;
-  especificacoes?: string;
+  detalhes?: string;
+  especificacoes_tecnicas?: string;
   periodo_calibracao_dias: number;
-  preco_venda?: number;
+  preco_de?: number;
+  preco_por?: number;
   custo?: number;
+  peso_calibracao?: number;
+  peso?: number;
+  estoque_minimo?: number;
+  estoque_maximo?: number;
   tags?: string;
+  palavras_chave?: string;
+  descricao_seo?: string;
   ativo?: string;
+  destaque?: string;
 }
 
 // ==================== EQUIPAMENTO EMPRESA ====================

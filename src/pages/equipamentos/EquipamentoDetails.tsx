@@ -92,7 +92,9 @@ const EquipamentoDetails: React.FC = () => {
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="info">{equipamento.categoria?.nome}</Badge>
+                  {equipamento.categoria?.nome && (
+                    <Badge variant="info">{equipamento.categoria.nome}</Badge>
+                  )}
                   <Badge variant={equipamento.ativo === 'S' ? 'success' : 'secondary'}>
                     {equipamento.ativo === 'S' ? 'Ativo' : 'Inativo'}
                   </Badge>
@@ -103,7 +105,7 @@ const EquipamentoDetails: React.FC = () => {
                 </h1>
 
                 <p className="text-gray-600 dark:text-gray-400">
-                  {equipamento.marca?.nome}
+                  {equipamento.marca?.nome || `Marca ID: ${equipamento.marca_id}`}
                   {equipamento.modelo && ` - ${equipamento.modelo}`}
                 </p>
               </div>

@@ -231,6 +231,7 @@ export interface OrdemServico {
   equipamento_empresa_id: number;
   chave_acesso: string;
   fase: FaseOS;
+  fase_id?: number;
   situacao: SituacaoOS;
   data_solicitacao: string;
   data_envio?: string;
@@ -244,10 +245,18 @@ export interface OrdemServico {
   observacoes?: string;
   numero_certificado?: string;
   certificado_pdf?: string;
+  certificado?: string; // Alias para certificado_pdf
+  teste_1?: number;
+  teste_2?: number;
+  teste_3?: number;
+  media?: number;
+  situacao_aprovacao?: 'aprovado' | 'reprovado';
   empresa?: Empresa;
   equipamento_empresa?: EquipamentoEmpresa;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
+  data_criacao?: string;
+  data_atualizacao?: string;
 }
 
 export interface OrdemServicoFormData {

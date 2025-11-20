@@ -22,7 +22,14 @@ export const marcaService = {
     search?: string;
     ativo?: string;
   }): Promise<PaginatedResponse<Marca>> {
-    const response = await api.get('/equipamentos/marcas', { params });
+    // Filtrar parâmetros vazios/undefined
+    const cleanParams: Record<string, any> = {};
+    if (params?.page) cleanParams.page = params.page;
+    if (params?.size) cleanParams.size = params.size;
+    if (params?.search) cleanParams.search = params.search;
+    if (params?.ativo) cleanParams.ativo = params.ativo;
+
+    const response = await api.get('/equipamentos/marcas', { params: cleanParams });
     return response.data.data || response.data;
   },
 

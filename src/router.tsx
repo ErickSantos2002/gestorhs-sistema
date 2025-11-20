@@ -1,61 +1,74 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { Spinner } from '@/components/common';
 
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+// Pages
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+import Bloqueio from './pages/Bloqueio';
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./hooks/useAuth";
+// Empresas
+import { EmpresasList, EmpresaForm, EmpresaDetails } from './pages/empresas';
 
-const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+// Equipamentos
+import { EquipamentosList, EquipamentoForm, EquipamentoDetails } from './pages/equipamentos';
 
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
+// Ordens de Serviço
+import { OSList, OSForm, OSDetails } from './pages/ordens-servico';
 
-  if (!user || user.role !== "admin") {
+// Relatórios
+import {
+  RelatoriosList,
+  RelatorioCalibracao,
+  RelatorioEquipamentos,
+  RelatorioFinanceiro,
+} from './pages/relatorios';
+
+// Usuários
+import { UsersList, UserForm, UserDetails } from './pages/usuarios';
+
+// Configurações
+import { ConfiguracoesPage } from './pages/configuracoes';
+
+// Componente de proteção de rotas
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
     return (
-      <div className="p-6 text-red-600 text-center font-semibold">
-        Acesso negado. Esta página é restrita a administradores.
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
       </div>
     );
   }
 
-  return <>{children}</>;
-};
-
-import Bloqueio from "./pages/Bloqueio"; // importe o novo componente
-
-const RequireVendas: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
-
-  if (!user || (user.role !== "admin" && user.role !== "vendas" && user.role !== "financeiro")) {
-    return <Bloqueio />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
 };
 
-const RequireServicos: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+// Componente de verificação de perfil
+interface RequirePerfilProps {
+  children: React.ReactNode;
+  perfis: string[];
+}
 
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
+const RequirePerfil: React.FC<RequirePerfilProps> = ({ children, perfis }) => {
+  const { user, loading, isPerfil } = useAuth();
 
-  if (!user || (user.role !== "admin" && user.role !== "servicos" && user.role !== "financeiro")) {
-    return <Bloqueio />;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
-  return <>{children}</>;
-};
-
-const RequireVendedores: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-gray-500">Verificando permissões...</div>;
-
-  if (!user || (user.role !== "admin" && user.role !== "vendas" && user.role !== "financeiro")) {
+  if (!user || !isPerfil(perfis)) {
     return <Bloqueio />;
   }
 
@@ -64,7 +77,18 @@ const RequireVendedores: React.FC<{ children: React.ReactNode }> = ({ children }
 
 const AppRoutes: React.FC = () => (
   <Routes>
+    {/* Rota pública */}
     <Route path="/login" element={<Login />} />
+
+    {/* Rotas protegidas */}
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute>
+          <Navigate to="/dashboard" replace />
+        </ProtectedRoute>
+      }
+    />
 
     <Route
       path="/dashboard"
@@ -75,7 +99,203 @@ const AppRoutes: React.FC = () => (
       }
     />
 
-    <Route path="/" element={<Navigate to="/inicio" />} />
+    {/* Empresas - Todos podem acessar */}
+    <Route
+      path="/empresas"
+      element={
+        <ProtectedRoute>
+          <EmpresasList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/novo"
+      element={
+        <ProtectedRoute>
+          <EmpresaForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/:id"
+      element={
+        <ProtectedRoute>
+          <EmpresaDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/empresas/:id/editar"
+      element={
+        <ProtectedRoute>
+          <EmpresaForm />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Equipamentos - Todos podem acessar */}
+    <Route
+      path="/equipamentos"
+      element={
+        <ProtectedRoute>
+          <EquipamentosList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/novo"
+      element={
+        <ProtectedRoute>
+          <EquipamentoForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/:id"
+      element={
+        <ProtectedRoute>
+          <EquipamentoDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/equipamentos/:id/editar"
+      element={
+        <ProtectedRoute>
+          <EquipamentoForm />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Ordens de Serviço - Todos podem acessar */}
+    <Route
+      path="/ordens"
+      element={
+        <ProtectedRoute>
+          <OSList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/ordens/nova"
+      element={
+        <ProtectedRoute>
+          <OSForm />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/ordens/:id"
+      element={
+        <ProtectedRoute>
+          <OSDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Relatórios - Todos podem acessar */}
+    <Route
+      path="/relatorios"
+      element={
+        <ProtectedRoute>
+          <RelatoriosList />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/calibracoes"
+      element={
+        <ProtectedRoute>
+          <RelatorioCalibracao />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/equipamentos"
+      element={
+        <ProtectedRoute>
+          <RelatorioEquipamentos />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/relatorios/financeiro"
+      element={
+        <ProtectedRoute>
+          <RelatorioFinanceiro />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Usuários - Apenas admin */}
+    <Route
+      path="/usuarios"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UsersList />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/novo"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserForm />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/:id"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserDetails />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/usuarios/:id/editar"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <UserForm />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Configurações - Apenas admin */}
+    <Route
+      path="/configuracoes"
+      element={
+        <ProtectedRoute>
+          <RequirePerfil perfis={['admin']}>
+            <ConfiguracoesPage />
+          </RequirePerfil>
+        </ProtectedRoute>
+      }
+    />
+
+    {/* 404 */}
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

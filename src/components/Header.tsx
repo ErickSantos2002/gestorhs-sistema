@@ -62,7 +62,7 @@ const Header: React.FC = () => {
           </button>
 
           <Link
-            to="/inicio"
+            to="/dashboard"
             className="hidden lg:flex items-center gap-2 font-bold text-xl text-blue-700 dark:text-blue-400 hover:scale-105 transition no-underline group"
           >
             <img
@@ -70,14 +70,14 @@ const Header: React.FC = () => {
               alt="Logo"
               className="w-6 h-6 transition-transform duration-500 group-hover:rotate-[360deg]"
             />
-            <span>DataCoreHS</span>
+            <span>GestorHS</span>
           </Link>
         </div>
 
         <div className="flex items-center gap-4 text-sm">
           <span className="text-gray-700 dark:text-gray-300 max-w-[160px] truncate">
-            {user?.username}{" "}
-            <span className="text-xs text-gray-400">({user?.role})</span>
+            {user?.nome}{" "}
+            <span className="text-xs text-gray-400">({user?.perfil})</span>
           </span>
           {!menuVisivel && (
             <button
@@ -121,14 +121,12 @@ const Header: React.FC = () => {
 
             {/* Navegação */}
             <nav className="flex flex-col gap-4">
-              <Link to="/inicio" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Início</Link>
               <Link to="/dashboard" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Dashboard</Link>
-              <Link to="/vendas" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Vendas</Link>
-              <Link to="/servicos" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Serviços</Link>
-              <Link to="/clientes" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Clientes</Link>
-              <Link to="/vendedores" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Vendedores</Link>
-              <Link to="/estoque" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Estoque</Link>
-              {user?.role === "admin" && (
+              <Link to="/empresas" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Empresas</Link>
+              <Link to="/equipamentos" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Equipamentos</Link>
+              <Link to="/ordens" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Ordens de Serviço</Link>
+              <Link to="/relatorios" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Relatórios</Link>
+              {user?.perfil === "admin" && (
                 <Link to="/configuracoes" onClick={fecharMenu} className="text-gray-700 dark:text-gray-200 font-medium">Configurações</Link>
               )}
             </nav>

@@ -7,26 +7,27 @@ import logo from "../assets/logo.png"
 import { useTheme } from "../context/ThemeContext"
 
 const Login: React.FC = () => {
-  const { login, loading, error, user } = useAuth()
-  const { setDarkModeOnLogin } = useTheme() // 👈 use a nova função
+  const { signIn, loading, error, user } = useAuth()
+  const { setDarkModeOnLogin } = useTheme()
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
   useEffect(() => {
     if (user) {
-      // ✅ Ativa via contexto (não manualmente)
       setDarkModeOnLogin()
-
-      if (location.pathname !== "/inicio") {
-        navigate("/inicio", { replace: true })
-      }
+      navigate("/dashboard", { replace: true })
     }
-  }, [user, navigate, location.pathname, setDarkModeOnLogin])
+  }, [user, navigate, setDarkModeOnLogin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(username, password)
+    try {
+      await signIn({ login: username, senha: password })
+    } catch (err) {
+      // Erro já é tratado no AuthContext
+      console.error('Erro no login:', err)
+    }
   }
 
   return (

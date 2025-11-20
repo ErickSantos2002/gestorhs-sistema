@@ -1,96 +1,135 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
-import api from "../services/api";
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { authService } from '@/services';
+import { User, LoginCredentials } from '@/types';
 
-type AuthContextType = {
-  user: { id: number; username: string; role: string } | null;
-  token: string | null;
+interface AuthContextData {
+  user: User | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
+  isAuthenticated: boolean;
+  signIn: (credentials: LoginCredentials) => Promise<void>;
+  signOut: () => void;
+  updateUser: (user: Partial<User>) => void;
+  hasPermission: (permission: string) => boolean;
+  isPerfil: (perfil: string | string[]) => boolean;
   error: string | null;
-};
+}
 
-export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<{ id: number; username: string; role: string } | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Carrega dados do localStorage na primeira renderização
+  // Carrega usuário do localStorage na inicialização
   useEffect(() => {
-    const savedToken = localStorage.getItem("access_token");
-    const savedId = localStorage.getItem("id");
-    const savedUsername = localStorage.getItem("username");
-    const savedRole = localStorage.getItem("role");
-
-    if (savedToken && savedId && savedUsername && savedRole) {
-      setUser({ id: Number(savedId), username: savedUsername, role: savedRole });
-      setToken(savedToken);
-    }
-    setLoading(false);
+    loadUserFromStorage();
   }, []);
 
-  // Função de login
-  const login = async (username: string, password: string) => {
-    setLoading(true);
-    setError(null);
-
+  const loadUserFromStorage = async () => {
     try {
-      const res = await api.post("/login", { username, password });
-      const { access_token } = res.data;
+      const token = localStorage.getItem('access_token');
 
-      // salva token
-      localStorage.setItem("access_token", access_token);
-      setToken(access_token);
-
-      // busca dados do usuário logado
-      const me = await api.get("/me", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-
-      const { id, username: userNameFromAPI, role } = me.data;
-      const roleName = typeof role === "string" ? role : role?.name || "";
-
-      // salva no localStorage
-      localStorage.setItem("id", id.toString());
-      localStorage.setItem("username", userNameFromAPI);
-      localStorage.setItem("role", roleName);
-
-      // atualiza state
-      setUser({ id, username: userNameFromAPI, role: roleName });
-    } catch (err: any) {
-      // 🧠 Aqui tratamos os erros HTTP
-      if (err.response) {
-        if (err.response.status === 401) {
-          setError("Usuário ou senha incorretos.");
-        } else if (err.response.status >= 500) {
-          setError("Erro no servidor. Tente novamente mais tarde.");
-        } else {
-          setError("Erro ao realizar login. Verifique os dados e tente novamente.");
-        }
-      } else {
-        setError("Erro de conexão com o servidor.");
+      if (!token) {
+        setLoading(false);
+        return;
       }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.getMe();
+      setUser(userData);
+    } catch (err) {
+      // Token inválido ou expirado, limpar
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função de logout
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("id");
-    setUser(null);
-    setToken(null);
-    setError(null);
+  const signIn = async (credentials: LoginCredentials) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await authService.login(credentials);
+
+      // Salvar tokens
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
+
+      // Salvar usuário
+      setUser(response.usuario);
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Erro ao fazer login';
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const signOut = async () => {
+    try {
+      await authService.logout();
+    } catch (err) {
+      console.error('Erro ao fazer logout:', err);
+    } finally {
+      // Limpar tokens do localStorage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
+    }
+  };
+
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      setUser({ ...user, ...userData });
+    }
+  };
+
+  const hasPermission = (permission: string): boolean => {
+    if (!user) return false;
+
+    // Lógica de permissões baseada no perfil
+    const permissions: Record<string, string[]> = {
+      admin: ['all'],
+      gerente: ['read_all', 'write_limited'],
+      tecnico: ['manage_os', 'manage_calibracao'],
+      atendente: ['read_general', 'create_os'],
+    };
+
+    const userPermissions = permissions[user.perfil] || [];
+    return userPermissions.includes('all') || userPermissions.includes(permission);
+  };
+
+  const isPerfil = (perfil: string | string[]): boolean => {
+    if (!user) return false;
+
+    if (Array.isArray(perfil)) {
+      return perfil.includes(user.perfil);
+    }
+
+    return user.perfil === perfil;
+  };
+
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, error }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated,
+        signIn,
+        signOut,
+        updateUser,
+        hasPermission,
+        isPerfil,
+        error,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

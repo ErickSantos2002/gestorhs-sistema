@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import "./styles/index.css"; // Importa o Tailwind e estilos globais
 import AppRoutes from "./router";
 import Header from "./components/Header";
@@ -14,19 +15,27 @@ const App: React.FC = () => {
 
   if (hideLayout) {
     // 🔥 Quando for rota sem layout, renderiza só as rotas
-    return <AppRoutes />;
+    return (
+      <>
+        <AppRoutes />
+        <Toaster position="top-right" />
+      </>
+    );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100 dark:bg-darkBlue text-gray-900 dark:text-gray-100 transition-colors">
-      <Header />
-      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-auto bg-gray-100 dark:bg-darkBlue transition-colors">
-          <AppRoutes />
-        </main>
+    <>
+      <div className="h-screen flex flex-col bg-gray-100 dark:bg-darkBlue text-gray-900 dark:text-gray-100 transition-colors">
+        <Header />
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+          <Sidebar />
+          <main className="flex-1 overflow-auto bg-gray-100 dark:bg-darkBlue transition-colors">
+            <AppRoutes />
+          </main>
+        </div>
       </div>
-    </div>
+      <Toaster position="top-right" />
+    </>
   );
 };
 

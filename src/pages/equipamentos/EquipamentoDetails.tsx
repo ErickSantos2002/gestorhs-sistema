@@ -136,11 +136,20 @@ const EquipamentoDetails: React.FC = () => {
                 </p>
               </div>
 
-              {equipamento.preco_venda && (
+              {equipamento.preco_de && (
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Preço de Venda</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Preço De</p>
+                  <p className="text-lg font-semibold text-gray-600 dark:text-gray-400 line-through">
+                    {formatCurrency(Number(equipamento.preco_de))}
+                  </p>
+                </div>
+              )}
+
+              {equipamento.preco_por && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Preço Por</p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {formatCurrency(equipamento.preco_venda)}
+                    {formatCurrency(Number(equipamento.preco_por))}
                   </p>
                 </div>
               )}
@@ -149,19 +158,39 @@ const EquipamentoDetails: React.FC = () => {
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Custo</p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(equipamento.custo)}
+                    {formatCurrency(Number(equipamento.custo))}
+                  </p>
+                </div>
+              )}
+
+              {equipamento.estoque_atual !== undefined && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Estoque Atual</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {equipamento.estoque_atual}
                   </p>
                 </div>
               )}
             </div>
 
-            {equipamento.especificacoes && (
+            {equipamento.detalhes && (
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Especificações
+                  Detalhes
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                  {equipamento.especificacoes}
+                  {equipamento.detalhes}
+                </p>
+              </div>
+            )}
+
+            {equipamento.especificacoes_tecnicas && (
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Especificações Técnicas
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                  {equipamento.especificacoes_tecnicas}
                 </p>
               </div>
             )}

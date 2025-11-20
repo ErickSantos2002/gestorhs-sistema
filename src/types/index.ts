@@ -129,18 +129,36 @@ export interface Equipamento {
   codigo: string;
   descricao: string;
   modelo?: string;
-  especificacoes?: string;
+  detalhes?: string;
+  especificacoes_tecnicas?: string;
+  peso_calibracao?: string | number;
   periodo_calibracao_dias: number;
-  preco_venda?: number;
-  custo?: number;
-  imagem?: string;
-  video?: string;
+  preco_de?: string | number;
+  preco_por?: string | number;
+  custo?: string | number;
+  peso?: string | number;
+  estoque_minimo?: number;
+  estoque_maximo?: number;
+  estoque_atual?: number;
   tags?: string;
+  palavras_chave?: string;
+  descricao_seo?: string;
+  imagem?: string;
+  video_url?: string;
+  visualizacoes?: number;
   ativo: string;
+  destaque?: string;
   categoria?: Categoria;
   marca?: Marca;
-  created_at: string;
-  updated_at: string;
+  data_cadastro?: string;
+  data_criacao?: string;
+  data_atualizacao?: string;
+  // Campos antigos para compatibilidade
+  especificacoes?: string;
+  preco_venda?: number;
+  video?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface EquipamentoFormData {

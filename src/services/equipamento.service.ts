@@ -32,7 +32,7 @@ export const equipamentoService = {
 
   async getById(id: number): Promise<Equipamento> {
     const response = await api.get(`/equipamentos/${id}`);
-    return response.data.data;
+    return response.data.data || response.data;
   },
 
   async create(data: EquipamentoFormData): Promise<Equipamento> {

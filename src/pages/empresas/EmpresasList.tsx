@@ -32,11 +32,15 @@ const EmpresasList: React.FC = () => {
   const loadEmpresas = async () => {
     try {
       setLoading(true);
+
+      // Converter tipo_pessoa do frontend (PJ/PF) para backend (J/F)
+      const tipoPessoaBackend = tipoPessoa === 'PJ' ? 'J' : tipoPessoa === 'PF' ? 'F' : undefined;
+
       const response = await empresaService.list({
         page,
         size,
         razao_social: debouncedSearch || undefined,
-        tipo_pessoa: tipoPessoa || undefined,
+        tipo_pessoa: tipoPessoaBackend as any,
         status_contato: statusContato || undefined,
       });
 
@@ -70,11 +74,15 @@ const EmpresasList: React.FC = () => {
       key: 'tipo_pessoa',
       header: 'Tipo',
       width: 'w-20',
-      render: (value) => (
-        <Badge variant={value === 'PJ' ? 'info' : 'secondary'} size="sm">
-          {value}
-        </Badge>
-      ),
+      render: (value) => {
+        // Converter tipo_pessoa do backend (J/F) para exibição (PJ/PF)
+        const displayValue = value === 'J' ? 'PJ' : value === 'F' ? 'PF' : value;
+        return (
+          <Badge variant={displayValue === 'PJ' ? 'info' : 'secondary'} size="sm">
+            {displayValue}
+          </Badge>
+        );
+      },
     },
     {
       key: 'razao_social',

@@ -80,7 +80,13 @@ const EmpresaForm: React.FC = () => {
 
       // Preencher formulário
       Object.keys(empresa).forEach((key) => {
-        setValue(key as any, empresa[key as keyof typeof empresa]);
+        const value = empresa[key as keyof typeof empresa];
+        // Converter tipo_pessoa do backend (J/F) para o formato do frontend (PJ/PF)
+        if (key === 'tipo_pessoa') {
+          setValue('tipo_pessoa', value === 'J' ? 'PJ' : 'PF');
+        } else {
+          setValue(key as any, value);
+        }
       });
     } catch (error) {
       console.error('Erro ao carregar empresa:', error);
@@ -125,11 +131,17 @@ const EmpresaForm: React.FC = () => {
     try {
       setLoading(true);
 
+      // Converter tipo_pessoa do formato do frontend (PJ/PF) para o backend (J/F)
+      const dataToSend = {
+        ...data,
+        tipo_pessoa: data.tipo_pessoa === 'PJ' ? 'J' : 'F',
+      };
+
       if (isEditing) {
-        await empresaService.update(Number(id), data);
+        await empresaService.update(Number(id), dataToSend as any);
         toast.success('Empresa atualizada com sucesso');
       } else {
-        await empresaService.create(data);
+        await empresaService.create(dataToSend as any);
         toast.success('Empresa cadastrada com sucesso');
       }
 

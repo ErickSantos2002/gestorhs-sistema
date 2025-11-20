@@ -23,7 +23,7 @@ export const categoriaService = {
     ativo?: string;
   }): Promise<PaginatedResponse<Categoria>> {
     const response = await api.get('/equipamentos/categorias', { params });
-    return response.data;
+    return response.data.data || response.data;
   },
 
   async getById(id: number): Promise<Categoria> {

@@ -23,7 +23,7 @@ export const marcaService = {
     ativo?: string;
   }): Promise<PaginatedResponse<Marca>> {
     const response = await api.get('/equipamentos/marcas', { params });
-    return response.data;
+    return response.data.data || response.data;
   },
 
   async getById(id: number): Promise<Marca> {

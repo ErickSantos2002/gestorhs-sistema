@@ -152,8 +152,14 @@ const EmpresaDetails: React.FC = () => {
             />
             <InfoItem label="Inscrição Estadual" value={empresa.inscricao_estadual} />
             <InfoItem label="Inscrição Municipal" value={empresa.inscricao_municipal} />
-            <InfoItem label="Cadastrado em" value={formatDate(empresa.created_at)} />
-            <InfoItem label="Última atualização" value={formatDate(empresa.updated_at)} />
+            <InfoItem
+              label="Cadastrado em"
+              value={empresa.data_criacao ? formatDate(empresa.data_criacao) : undefined}
+            />
+            <InfoItem
+              label="Última atualização"
+              value={empresa.data_atualizacao ? formatDate(empresa.data_atualizacao) : undefined}
+            />
           </dl>
         </div>
 

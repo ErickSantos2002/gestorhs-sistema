@@ -71,10 +71,17 @@ export interface Empresa {
   email: string;
   observacoes?: string;
   logo?: string;
+  imagem?: string;
   ativo: string;
   status_contato: 'ativo' | 'inativo' | 'perdido';
-  created_at: string;
-  updated_at: string;
+  // Campos de data (backend retorna estes nomes)
+  data_criacao?: string;
+  data_atualizacao?: string;
+  data_cadastro?: string;
+  data_ultima_visita?: string;
+  // Campos antigos (manter para compatibilidade)
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface EmpresaFormData {

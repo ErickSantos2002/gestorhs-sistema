@@ -142,12 +142,12 @@ const CategoriasTab: React.FC = () => {
     {
       key: 'descricao',
       label: 'Descrição',
-      render: (categoria) => categoria.descricao || '-',
+      render: (value, categoria) => categoria.descricao || '-',
     },
     {
       key: 'ativo',
       label: 'Status',
-      render: (categoria) => (
+      render: (value, categoria) => (
         <Badge variant={categoria.ativo === 'S' ? 'success' : 'danger'}>
           {categoria.ativo === 'S' ? 'Ativo' : 'Inativo'}
         </Badge>
@@ -156,7 +156,7 @@ const CategoriasTab: React.FC = () => {
     {
       key: 'actions',
       label: 'Ações',
-      render: (categoria) => (
+      render: (_, categoria) => (
         <div className="flex gap-2">
           <Button
             variant="ghost"

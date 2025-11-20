@@ -142,12 +142,12 @@ const MarcasTab: React.FC = () => {
     {
       key: 'descricao',
       label: 'Descrição',
-      render: (marca) => marca.descricao || '-',
+      render: (value, marca) => marca.descricao || '-',
     },
     {
       key: 'ativo',
       label: 'Status',
-      render: (marca) => (
+      render: (value, marca) => (
         <Badge variant={marca.ativo === 'S' ? 'success' : 'danger'}>
           {marca.ativo === 'S' ? 'Ativo' : 'Inativo'}
         </Badge>
@@ -156,7 +156,7 @@ const MarcasTab: React.FC = () => {
     {
       key: 'actions',
       label: 'Ações',
-      render: (marca) => (
+      render: (_, marca) => (
         <div className="flex gap-2">
           <Button
             variant="ghost"

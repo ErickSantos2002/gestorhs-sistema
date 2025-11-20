@@ -274,6 +274,7 @@ export interface FinalizarOSData {
   teste_3?: number;
   media?: number;
   situacao_aprovacao: 'aprovado' | 'reprovado';
+  certificado?: string;
 }
 
 // ==================== RELATÓRIOS ====================

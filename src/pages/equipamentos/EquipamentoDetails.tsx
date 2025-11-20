@@ -55,7 +55,15 @@ const EquipamentoDetails: React.FC = () => {
     );
   }
 
-  if (!equipamento) return null;
+  if (!equipamento) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-[#0f172a]">
+        <p className="text-gray-600 dark:text-gray-400">Equipamento não encontrado</p>
+      </div>
+    );
+  }
+
+  console.log('Equipamento carregado:', equipamento);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] transition-colors p-6">
@@ -138,7 +146,7 @@ const EquipamentoDetails: React.FC = () => {
                 </p>
               </div>
 
-              {equipamento.preco_de && (
+              {equipamento.preco_de && !isNaN(Number(equipamento.preco_de)) && (
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Preço De</p>
                   <p className="text-lg font-semibold text-gray-600 dark:text-gray-400 line-through">
@@ -147,7 +155,7 @@ const EquipamentoDetails: React.FC = () => {
                 </div>
               )}
 
-              {equipamento.preco_por && (
+              {equipamento.preco_por && !isNaN(Number(equipamento.preco_por)) && (
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Preço Por</p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
@@ -156,7 +164,7 @@ const EquipamentoDetails: React.FC = () => {
                 </div>
               )}
 
-              {equipamento.custo && (
+              {equipamento.custo && !isNaN(Number(equipamento.custo)) && (
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Custo</p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">

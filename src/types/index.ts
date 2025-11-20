@@ -50,8 +50,10 @@ export interface DashboardMetrics {
 // ==================== EMPRESA ====================
 export interface Empresa {
   id: number;
-  tipo_pessoa: 'PJ' | 'PF';
-  cnpj_cpf: string;
+  tipo_pessoa: 'PJ' | 'PF' | 'J' | 'F'; // Backend pode retornar J/F
+  cnpj_cpf?: string; // Campo unificado (pode vir null do backend)
+  cpf?: string; // Backend retorna CPF separado para PF
+  cnpj?: string; // Backend retorna CNPJ separado para PJ
   razao_social: string;
   nome_fantasia?: string;
   inscricao_estadual?: string;

@@ -81,10 +81,18 @@ const EmpresaForm: React.FC = () => {
       // Preencher formulário
       Object.keys(empresa).forEach((key) => {
         const value = empresa[key as keyof typeof empresa];
+
         // Converter tipo_pessoa do backend (J/F) para o formato do frontend (PJ/PF)
         if (key === 'tipo_pessoa') {
           setValue('tipo_pessoa', value === 'J' ? 'PJ' : 'PF');
-        } else {
+        }
+        // Backend retorna CPF/CNPJ em campos separados (cpf ou cnpj)
+        else if (key === 'cpf' || key === 'cnpj') {
+          if (value) {
+            setValue('cnpj_cpf', value as string);
+          }
+        }
+        else {
           setValue(key as any, value);
         }
       });

@@ -147,8 +147,8 @@ const EmpresaDetails: React.FC = () => {
 
           <dl className="space-y-4">
             <InfoItem
-              label={empresa.tipo_pessoa === 'PJ' ? 'CNPJ' : 'CPF'}
-              value={formatCPFCNPJ(empresa.cnpj_cpf)}
+              label={empresa.tipo_pessoa === 'PJ' || empresa.tipo_pessoa === 'J' ? 'CNPJ' : 'CPF'}
+              value={formatCPFCNPJ(empresa.cnpj_cpf || empresa.cpf || empresa.cnpj)}
             />
             <InfoItem label="Inscrição Estadual" value={empresa.inscricao_estadual} />
             <InfoItem label="Inscrição Municipal" value={empresa.inscricao_municipal} />

@@ -101,7 +101,11 @@ const EmpresasList: React.FC = () => {
     {
       key: 'cnpj_cpf',
       header: 'CPF/CNPJ',
-      render: (value) => formatCPFCNPJ(value),
+      render: (value, row) => {
+        // Backend retorna em campos separados: cpf ou cnpj
+        const documento = row.cnpj_cpf || row.cpf || row.cnpj;
+        return formatCPFCNPJ(documento);
+      },
     },
     {
       key: 'telefone',
